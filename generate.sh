@@ -5,7 +5,7 @@ FILE="yourbinary"
 PORT=8080
 
 
-cat dropper.c | sed "s/CH4NG3M3/$IP/g" | sed "s/P0RT/$PORT/g" > tmp.c
+cat dropper.c | sed -e "s/CH4NG3M3/$IP/g" -e sed "s/P0RT/$PORT/g" > tmp.c
 
 make tmp >/dev/null 2>&1
 
